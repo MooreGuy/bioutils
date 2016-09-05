@@ -4,6 +4,7 @@ import (
 	"bytes"
 )
 
+// returns the number of occurrences of pattern in a text
 func PatternCount(text []byte, pattern string) int {
 	var count int = 0
 	var index int = 0
