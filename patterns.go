@@ -17,3 +17,41 @@ func PatternCount(text []byte, pattern string) int {
 
 	return count
 }
+
+// returns the most frequent kmers in a text. Possible to have multiple
+// most frequent
+func MostFrequentKmers(text []byte, k int) []string {
+	mostFrequentKmers := []string{}
+	kmerPatternCounts := make([]int, len(text))
+	maxCount := 0
+	for i := 0; i <= len(text)-k; i++ {
+		kmerPatternCounts[i] = PatternCount(text, string(text[i:i+k]))
+		if kmerPatternCounts[i] > maxCount {
+			maxCount = kmerPatternCounts[i]
+		}
+	}
+	for i := 0; i <= len(text)-k; i++ {
+		if kmerPatternCounts[i] == maxCount {
+			mostFrequentKmers = append(mostFrequentKmers, string(text[i:i+k]))
+		}
+	}
+
+	mostFrequentKmers = RemoveDuplicates(mostFrequentKmers)
+
+	return mostFrequentKmers
+}
+
+func RemoveDuplicates(items []string) []string {
+	for i := 0; i <= len(items)-1; i++ {
+		for comparingIndex := i + 1; comparingIndex <= len(items)-1; comparingIndex++ {
+			if items[i] == items[comparingIndex] {
+				// delete i
+				items = append(items[:comparingIndex], items[comparingIndex+1:]...)
+				comparingIndex--
+
+			}
+		}
+	}
+
+	return items
+}
