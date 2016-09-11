@@ -55,3 +55,37 @@ func RemoveDuplicates(items []string) []string {
 
 	return items
 }
+
+// G to C skew
+func Skew(genome string) []int {
+	var skews []int = make([]int, len(genome)+1)
+	var currentSkew int = 0
+
+	skews[0] = currentSkew
+	for i, nucleotide := range genome {
+		if nucleotide == 'G' {
+			currentSkew++
+		} else if nucleotide == 'C' {
+			currentSkew--
+		}
+		skews[i+1] = currentSkew
+	}
+
+	return skews
+}
+
+// Returns the lowest number and the indeces in the array of skews.
+func FindLowest(skews []int) (lowest int, indexes []int) {
+	lowest = skews[0]
+	indexes = []int{0}
+	for i := 1; i < len(skews); i++ {
+		if lowest > skews[i] {
+			lowest = skews[i]
+			indexes = []int{i}
+		} else if lowest == skews[i] {
+			indexes = append(indexes, i)
+		}
+	}
+
+	return lowest, indexes
+}

@@ -34,3 +34,27 @@ func TestRemoveDuplicates(t *testing.T) {
 		t.Error("Expected: ", expected, "Actual: ", actual)
 	}
 }
+
+func TestSkew(t *testing.T) {
+	expected := []int{0, -1, -1, -1, 0, 1, 2, 1, 1, 1, 0, 1, 2, 1, 0, 0, 0, 0, -1, 0, -1, -2}
+	skew := Skew("CATGGGCATCGGCCATACGCC")
+	if !reflect.DeepEqual(expected, skew) {
+		t.Error("Expected: ", expected, "Actual: ", skew)
+	}
+
+	skew = Skew("GAGCCACCGCGATA")
+	expected = []int{0, 1, 1, 2, 1, 0, 0, -1, -2, -1, -2, -1, -1, -1, -1}
+
+	if !reflect.DeepEqual(expected, skew) {
+		t.Error("Expected: ", expected, "Actual: ", skew)
+	}
+}
+
+func TestFindLowest(t *testing.T) {
+	expected := []int{11, 24}
+	_, actual := FindLowest(Skew("TAAAGACTGCCGAGAGGCCAACACGAGTGCTAGAACGAGGGGCGTAAACGCGGGTCCGAT"))
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Error("Expected: ", expected, "Actual: ", actual)
+	}
+}
