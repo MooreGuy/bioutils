@@ -58,3 +58,51 @@ func TestFindLowest(t *testing.T) {
 		t.Error("Expected: ", expected, "Actual: ", actual)
 	}
 }
+
+func TestHammingDistance(t *testing.T) {
+	expected := 3
+	actual := HammingDistance("GGGCCGTTGGT", "GGACCGTTGAC")
+	if expected != actual {
+		t.Error("Expected: ", expected, "Actual: ", actual)
+	}
+}
+
+func TestLeftPad(t *testing.T) {
+	expected := "FFFABC"
+	actual := LeftPad("ABC", 3)
+	if expected != actual {
+		t.Error("Expected: ", expected, "Actual: ", actual)
+	}
+}
+
+func TestSimilarPatterns(t *testing.T) {
+	expected := []int{6, 7, 26, 27}
+	text := []byte("CGCCCGAATCCAGAACGCATTCCCATATTTCGGGACCACTGGCCTCCACGGTACGGACGTCAATCAAAT")
+	pattern := "ATTCTGGA"
+	tolerance := 3
+	actual := SimilarPatterns(text, pattern, tolerance)
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Error("Expected: ", expected, "Actual: ", actual)
+	}
+
+	expected = []int{4, 5, 6, 7, 8, 11, 12, 13, 14, 15}
+	text = []byte("TTTTTTAAATTTTAAATTTTTT")
+	pattern = "AAA"
+	tolerance = 2
+	actual = SimilarPatterns(text, pattern, tolerance)
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Error("Expected: ", expected, "Actual: ", actual)
+	}
+
+	expected = []int{0, 30, 66}
+	text = []byte("GAGCGCTGGGTTAACTCGCTACTTCCCGACGAGCGCTGTGGCGCAAATTGGCGATGAAACTGCAGAGAGAACTGGTCATCCAACTGAATTCTCCCCGCTATCGCATTTTGATGCGCGCCGCGTCGATT")
+	pattern = "GAGCGCTGG"
+	tolerance = 2
+	actual = SimilarPatterns(text, pattern, tolerance)
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Error("Expected: ", expected, "Actual: ", actual)
+	}
+}

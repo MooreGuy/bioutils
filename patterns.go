@@ -18,6 +18,39 @@ func PatternCount(text []byte, pattern string) int {
 	return count
 }
 
+// Finds patterns similar within a tolerance and returns their starting indexes
+func SimilarPatterns(text []byte, pattern string, tolerance int) []int {
+	patternIndexes := []int{}
+	for i := 0; i < len(text); i++ {
+		endIndex := min(i+len(pattern), len(text)-1)
+		compareString := string(text[i:endIndex])
+		if len(compareString) < len(pattern) && i < len(pattern) {
+			compareString = LeftPad(compareString, len(pattern)-len(compareString))
+		}
+		if HammingDistance(compareString, pattern) <= tolerance {
+			patternIndexes = append(patternIndexes, i)
+		}
+	}
+
+	return patternIndexes
+}
+
+func LeftPad(toPad string, padLength int) string {
+	padding := make([]byte, 0, padLength)
+	for i := 0; i < padLength; i++ {
+		padding = append(padding, 'F')
+	}
+
+	return string(append(padding, []byte(toPad)...))
+}
+
+func min(x, y int) int {
+	if x <= y {
+		return x
+	}
+	return y
+}
+
 // returns the most frequent kmers in a text. Possible to have multiple
 // most frequent
 func MostFrequentKmers(text []byte, k int) []string {
@@ -56,7 +89,7 @@ func RemoveDuplicates(items []string) []string {
 	return items
 }
 
-// G to C skew
+// The `5 to `3 skew or G to C skew
 func Skew(genome string) []int {
 	var skews []int = make([]int, len(genome)+1)
 	var currentSkew int = 0
@@ -88,4 +121,26 @@ func FindLowest(skews []int) (lowest int, indexes []int) {
 	}
 
 	return lowest, indexes
+}
+
+func HammingDistance(p string, q string) int {
+	mismatches := 0
+	var shorterString string
+	var longerString string
+	if len(p) > len(q) {
+		shorterString = q
+		longerString = p
+	} else {
+		shorterString = p
+		longerString = q
+	}
+
+	for i, value := range shorterString {
+		if value != rune(longerString[i]) {
+			mismatches++
+		}
+	}
+
+	mismatches += len(longerString) - len(shorterString)
+	return mismatches
 }
