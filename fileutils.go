@@ -13,7 +13,7 @@ func ParseLines(filepath string) ([]string, error) {
 	}
 	defer file.Close()
 
-	var lines []string = make([]string, 5)
+	var lines []string = make([]string, 0)
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
