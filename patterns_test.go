@@ -106,3 +106,33 @@ func TestSimilarPatterns(t *testing.T) {
 		t.Error("Expected: ", expected, "Actual: ", actual)
 	}
 }
+
+func TestFindAllKmers(t *testing.T) {
+	text := []byte("GACTGACT")
+	k := 3
+	actual := FindAllKmers(text, k)
+	expected := []string{"GAC", "ACT", "CTG", "TGA"}
+	if !reflect.DeepEqual(expected, actual) {
+		t.Error("Expected: ", expected, "Actual: ", actual)
+	}
+}
+
+func TestMostFrequentKmersWithMismatch(t *testing.T) {
+	text := []byte("GACTGACT")
+	k := 3
+	tolerance := 1
+	actual := MostFrequentKmersWithMismatch(text, k, tolerance)
+	expected := []string{"GAC", "ACT"}
+	if !reflect.DeepEqual(expected, actual) {
+		t.Error("Exepcted: ", expected, "Actual: ", actual)
+	}
+
+	text = []byte("ACGTTGCATGTCGCATGATGCATGAGAGCT")
+	k = 4
+	tolerance = 1
+	expected = MostFrequentKmersWithMismatch(text, k, tolerance)
+	actual = []string{"ATGT", "GATG", "ATGC"}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Error("Exepcted: ", expected, "Actual: ", actual)
+	}
+}

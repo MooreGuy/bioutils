@@ -74,6 +74,30 @@ func MostFrequentKmers(text []byte, k int) []string {
 	return mostFrequentKmers
 }
 
+func MostFrequentKmersWithMismatch(text []byte, k int, tolerance int) []string {
+	allKmers := FindAllKmers(text, k)
+	maxCountKmers := []string{}
+	maxCount := 0
+	for _, kmer := range allKmers {
+		if count := len(SimilarPatterns(text, kmer, tolerance)); count > maxCount {
+			maxCountKmers = []string{kmer}
+			maxCount = count
+		} else if count == maxCount {
+			maxCountKmers = append(maxCountKmers, kmer)
+		}
+	}
+
+	return maxCountKmers
+}
+
+func FindAllKmers(text []byte, k int) (kmers []string) {
+	for i := 0; i <= len(text)-k; i++ {
+		kmers = append(kmers, string(text[i:i+k]))
+	}
+	kmers = RemoveDuplicates(kmers)
+	return
+}
+
 func RemoveDuplicates(items []string) []string {
 	for i := 0; i <= len(items)-1; i++ {
 		for comparingIndex := i + 1; comparingIndex <= len(items)-1; comparingIndex++ {
