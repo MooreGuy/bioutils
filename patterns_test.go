@@ -130,8 +130,17 @@ func TestMostFrequentKmersWithMismatch(t *testing.T) {
 	text = []byte("ACGTTGCATGTCGCATGATGCATGAGAGCT")
 	k = 4
 	tolerance = 1
-	expected = MostFrequentKmersWithMismatch(text, k, tolerance)
-	actual = []string{"ATGT", "GATG", "ATGC"}
+	actual = MostFrequentKmersWithMismatch(text, k, tolerance)
+	expected = []string{"ATGT", "GATG", "ATGC"}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Error("Exepcted: ", expected, "Actual: ", actual)
+	}
+
+	text = []byte("AAAAAAAAAA")
+	k = 2
+	tolerance = 1
+	actual = MostFrequentKmersWithMismatch(text, k, tolerance)
+	expected = []string{"AA", "AC", "AG", "CA", "AT", "GA", "TA"}
 	if !reflect.DeepEqual(actual, expected) {
 		t.Error("Exepcted: ", expected, "Actual: ", actual)
 	}

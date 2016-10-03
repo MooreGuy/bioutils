@@ -79,15 +79,30 @@ func MostFrequentKmersWithMismatch(text []byte, k int, tolerance int) []string {
 	maxCountKmers := []string{}
 	maxCount := 0
 	for _, kmer := range allKmers {
-		if count := len(SimilarPatterns(text, kmer, tolerance)); count > maxCount {
+		similarPatternIndexes := SimilarPatterns(text, kmer, tolerance)
+		if len(similarPatternIndexes) > maxCount {
 			maxCountKmers = []string{kmer}
-			maxCount = count
-		} else if count == maxCount {
+			// Retrieve all similar kmers.
+			maxCountKmers = append(maxCountKmers,
+				RetrieveKmersFromIndexSlice(text, similarPatternIndexes, k)...)
+			maxCount = len(similarPatternIndexes)
+		} else if len(similarPatternIndexes) == maxCount {
 			maxCountKmers = append(maxCountKmers, kmer)
 		}
 	}
 
-	return maxCountKmers
+	return RemoveDuplicates(maxCountKmers)
+}
+
+// I really don't like this, but since SimilarPatterns returns start indexes
+// rather than the kmer itself, I have to do this.
+func RetrieveKmersFromIndexSlice(text []byte, startIndexes []int, k int) (kmers []string) {
+	kmers = []string{}
+	for _, startIndex := range startIndexes {
+		kmers = append(kmers, string(text[startIndex:startIndex+k]))
+	}
+
+	return
 }
 
 func FindAllKmers(text []byte, k int) (kmers []string) {
