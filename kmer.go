@@ -29,33 +29,6 @@ func CreateKmer(sequences []dnaSequence) (kmer, error) {
 	return kmer{sequences: sequences, k: expectedRange}, nil
 }
 
-// A neighbor  are kmers that are within a Hamming Distance away from the given
-// pattern.
-func GenerateNeighbors(pattern dnaSequence, distance int) (neighborhoodKmer kmer) {
-	sequences := []dnaSequence{}
-	sequences = append(sequences, pattern)
-	neighborhoodKmer = kmer{k: len(pattern), sequences: sequences}
-	if distance == 0 {
-		return
-	}
-	if len(pattern) == 1 {
-		sequences = append(sequences, pattern[0].OtherNucleotides())
-		return
-	}
-
-	suffixNeighbors := GenerateNeighbors(pattern[1:], distance)
-	for _, sequence := range suffixNeighbors.sequences {
-		suffix := pattern[1:]
-		if suffix.HammingDistance(sequence) < distance {
-			for _, nucl := range GetValidNucleotides() {
-				newSequence := append(dnaSequence{nucl}, sequence...)
-				sequences = append(sequences, newSequence)
-			}
-		}
-	}
-	return
-}
-
 // returns the most frequent kmers in a genome. Possible to have multiple
 // most frequent
 func MostFrequentKmers(genome dnaSequence, k int) (mostFrequentKmers kmer) {

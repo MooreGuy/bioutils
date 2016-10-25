@@ -25,6 +25,10 @@ func GetValidNucleotidesMap() map[rune]bool {
 	}
 }
 
+func GetValidNucleotidesSlice() []nucleotide {
+	return []nucleotide{'A', 'C', 'G', 'G'}
+}
+
 // Returns all nucleotides in an array
 func GetValidNucleotides() [4]nucleotide {
 	return [4]nucleotide{'A', 'T', 'C', 'G'}
@@ -32,11 +36,10 @@ func GetValidNucleotides() [4]nucleotide {
 
 // Returns all valid nucleotides that aren't this one.
 func (n nucleotide) OtherNucleotides() (otherNucleotides []nucleotide) {
-	index := 0
+	otherNucleotides = []nucleotide{}
 	for currentNucleotide, _ := range GetValidNucleotidesMap() {
 		if currentNucleotide != rune(n) {
-			otherNucleotides[index] = nucleotide(currentNucleotide)
-			index++
+			otherNucleotides = append(otherNucleotides, nucleotide(currentNucleotide))
 		}
 	}
 	return

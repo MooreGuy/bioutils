@@ -37,6 +37,14 @@ func DNASequences(uncheckedSequences []string) ([]dnaSequence, error) {
 	return sequences, nil
 }
 
+func DNASequencesFromNucleotides(nucleotides []nucleotide) []dnaSequence {
+	sequence := []dnaSequence{}
+	for _, nucleotide := range nucleotides {
+		sequence = append(sequence, dnaSequence{nucleotide})
+	}
+	return sequence
+}
+
 // The hamming distance is the number of differences of two dnaSequences
 func (sequence dnaSequence) HammingDistance(compareSequence dnaSequence) int {
 	mismatches := 0
@@ -107,6 +115,14 @@ func (genome dnaSequence) PatternCount(pattern dnaSequence) int {
 	return count
 }
 
+func (sequence dnaSequence) String() string {
+	byteSequence := []byte{}
+	for _, nucleotide := range sequence {
+		byteSequence = append(byteSequence, byte(nucleotide))
+	}
+	return string(byteSequence)
+}
+
 // The `5 to `3 skew or G to C skew
 func Skew(genome dnaSequence) []int {
 	var skews []int = make([]int, len(genome)+1)
@@ -123,4 +139,36 @@ func Skew(genome dnaSequence) []int {
 	}
 
 	return skews
+}
+
+// A neighbor  are kmers that are within a Hamming Distance away from the given
+// pattern.
+func GenerateNeighbors(pattern dnaSequence, distance int) (neighborhood []dnaSequence) {
+	neighborhood = []dnaSequence{}
+	if distance == 0 {
+		neighborhood = []dnaSequence{pattern}
+		return
+	}
+	if len(pattern) == 1 {
+		neighborhood = DNASequencesFromNucleotides(GetValidNucleotidesSlice())
+		return
+	}
+
+	suffix := pattern[1:]
+	suffixNeighbors := GenerateNeighbors(suffix, distance)
+	for _, sequence := range suffixNeighbors {
+		// If the hamming distance allows a mismatch, add all possible mismatches
+		if suffix.HammingDistance(sequence) < distance {
+			for _, nucl := range GetValidNucleotides() {
+				newSequence := append(dnaSequence{nucl}, sequence...)
+				neighborhood = append(neighborhood, newSequence)
+			}
+		} else {
+			firstNucleotideSequence := dnaSequence{pattern[0]}
+			newSequence := append(firstNucleotideSequence, sequence...)
+			neighborhood = append(neighborhood, newSequence)
+		}
+	}
+
+	return
 }
