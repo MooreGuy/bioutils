@@ -172,3 +172,94 @@ func GenerateNeighbors(pattern dnaSequence, distance int) (neighborhood []dnaSeq
 
 	return
 }
+
+/*
+func MostFrequentKmersWithMismatch(genome dnaSequence, k int, tolerance int) []dnaSequence {
+	allKmers := FindAllKmers(genome, k)
+	maxCountKmers := []string{}
+	maxCount := 0
+	for _, kmer := range allKmers {
+		similarPatternIndexes := SimilarPatterns(text, kmer, tolerance)
+		if len(similarPatternIndexes) > maxCount {
+			maxCountKmers = []string{kmer}
+			// Retrieve all similar kmers.
+			maxCountKmers = append(maxCountKmers,
+				RetrieveKmersFromIndexSlice(text, similarPatternIndexes, k)...)
+			maxCount = len(similarPatternIndexes)
+		} else if len(similarPatternIndexes) == maxCount {
+			maxCountKmers = append(maxCountKmers, kmer)
+		}
+	}
+
+	return RemoveDuplicates(maxCountKmers)
+}
+*/
+
+func Test(genome dnaSequence, k int, tolerance int) []dnaSequence {
+	mers := FindAllKmers(genome, k)
+	var mostFrequent []dnaSequence
+	highestFrequency := 0
+	for _, mer := range mers {
+		neighbors := GenerateNeighbors(mer, tolerance)
+		sum := 0
+		for _, neighbor := range neighbors {
+			sum += genome.PatternCount(neighbor)
+		}
+
+		if highestFrequency < sum {
+			mostFrequent = []dnaSequence{mer}
+			mostFrequent = append(mostFrequent, neighbors...)
+			highestFrequency = sum
+		} else if highestFrequency == sum {
+			mostFrequent = append(mostFrequent, neighbors...)
+		}
+	}
+
+	return mostFrequent
+}
+
+func Test2(genome dnaSequence, k int, tolerance int) []dnaSequence {
+	mers := FindAllKmers(genome, k)
+	var mostFrequent []dnaSequence
+	highestFrequency := 0
+	for _, mer := range mers {
+		frequencyWithMismatch := len(SimilarPatterns(genome, mer, tolerance))
+
+		if highestFrequency < frequencyWithMismatch {
+			mostFrequent = []dnaSequence{mer}
+			neighbors := GenerateNeighbors(mer, tolerance)
+			mostFrequent = append(mostFrequent, neighbors...)
+			highestFrequency = frequencyWithMismatch
+		} else if highestFrequency == frequencyWithMismatch {
+			neighbors := GenerateNeighbors(mer, tolerance)
+			mostFrequent = append(mostFrequent, neighbors...)
+		}
+	}
+
+	return RemoveDuplicates(mostFrequent)
+}
+
+func FindAllKmers(genome dnaSequence, k int) []dnaSequence {
+	kmers := []dnaSequence{}
+	for i := 0; i <= len(genome)-k; i++ {
+		kmers = append(kmers, genome[i:i+k])
+	}
+	return RemoveDuplicates(kmers)
+}
+
+func RemoveDuplicates(mers []dnaSequence) []dnaSequence {
+	for i := 0; i <= len(mers)-1; i++ {
+		for comparingIndex := i + 1; comparingIndex <= len(mers)-1; comparingIndex++ {
+			currentMer := mers[i]
+			compareMer := mers[comparingIndex]
+			if reflect.DeepEqual(currentMer, compareMer) {
+				// delete i
+				mers = append(mers[:comparingIndex],
+					mers[comparingIndex+1:]...)
+				comparingIndex--
+			}
+		}
+	}
+
+	return RemoveDuplicates(mers)
+}

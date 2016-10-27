@@ -2,7 +2,6 @@ package bioutils
 
 import (
 	"errors"
-	"reflect"
 )
 
 type kmer struct {
@@ -47,24 +46,7 @@ func MostFrequentKmers(genome dnaSequence, k int) (mostFrequentKmers kmer) {
 		}
 	}
 
-	mostFrequentKmers = mostFrequentKmers.RemoveDuplicates()
+	mostFrequentKmers.sequences = RemoveDuplicates(mostFrequentKmers.sequences)
 
 	return mostFrequentKmers
-}
-
-func (merDuplicates kmer) RemoveDuplicates() kmer {
-	for i := 0; i <= len(merDuplicates.sequences)-1; i++ {
-		for comparingIndex := i + 1; comparingIndex <= len(merDuplicates.sequences)-1; comparingIndex++ {
-			currentMer := merDuplicates.sequences[i]
-			compareMer := merDuplicates.sequences[comparingIndex]
-			if reflect.DeepEqual(currentMer, compareMer) {
-				// delete i
-				merDuplicates.sequences = append(merDuplicates.sequences[:comparingIndex],
-					merDuplicates.sequences[comparingIndex+1:]...)
-				comparingIndex--
-			}
-		}
-	}
-
-	return merDuplicates
 }

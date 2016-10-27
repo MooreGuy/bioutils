@@ -26,7 +26,7 @@ func GetValidNucleotidesMap() map[rune]bool {
 }
 
 func GetValidNucleotidesSlice() []nucleotide {
-	return []nucleotide{'A', 'C', 'G', 'G'}
+	return []nucleotide{'A', 'C', 'G', 'T'}
 }
 
 // Returns all nucleotides in an array
