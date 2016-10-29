@@ -5,28 +5,6 @@ import (
 	"testing"
 )
 
-/*
-func TestPatternCount(t *testing.T) {
-	var text []byte = []byte{'G', 'C', 'G', 'C', 'G'}
-	var pattern string = "GCG"
-
-	sequence1, err := CreateDNASequence("GCGCG")
-	if err != nil {
-		t.Error("didn't expect an error when creating a sequence")
-	}
-
-	sequence2, err := CreateDNASequence("GCG")
-	if err != nil {
-		t.Error("didn't expect an error when creating a sequence")
-	}
-
-	count := sequence1.PatternCount(sequence2)
-	if count != 2 {
-		t.Error("Expected 2, got ", count)
-	}
-}
-*/
-
 func TestMostFrequentKmers(t *testing.T) {
 	genome, err := CreateDNASequence("ACGTTGCATGTCGCATGATGCATGAGAGCT")
 	if err != nil {
@@ -49,27 +27,6 @@ func TestMostFrequentKmers(t *testing.T) {
 
 	if !reflect.DeepEqual(expectedSequences, frequentWords.Sequences()) {
 		t.Error("Expected: ", expectedSequences, "Actual: ", frequentWords.Sequences())
-	}
-}
-
-func TestRemoveDuplicates(t *testing.T) {
-	sequences, err := DNASequences([]string{"ATCG", "ATCG", "ATGC", "ATGC", "GATC"})
-	if err != nil {
-		t.Error("didn't expect an error when creating a sequences")
-	}
-	kmerWithDuplicates, err := CreateKmer(sequences)
-	if err != nil {
-		t.Error("didn't expect an error when creating kmer")
-	}
-
-	expected, err := DNASequences([]string{"ATCG", "ATGC", "GATC"})
-	if err != nil {
-		t.Error("didn't expect an error when creating a sequences")
-	}
-
-	actual := kmerWithDuplicates.RemoveDuplicates()
-	if !reflect.DeepEqual(expected, actual.Sequences()) {
-		t.Error("Expected: ", expected, "Actual: ", actual.Sequences())
 	}
 }
 
@@ -108,60 +65,6 @@ func TestFindLowest(t *testing.T) {
 		t.Error("Expected: ", expected, "Actual: ", actual)
 	}
 }
-
-/*
-func TestHammingDistance(t *testing.T) {
-	expected := 3
-	actual := HammingDistance("GGGCCGTTGGT", "GGACCGTTGAC")
-	if expected != actual {
-		t.Error("Expected: ", expected, "Actual: ", actual)
-	}
-}
-*/
-
-/*
-func TestLeftPad(t *testing.T) {
-	expected := "FFFABC"
-	actual := LeftPad("ABC", 3)
-	if expected != actual {
-		t.Error("Expected: ", expected, "Actual: ", actual)
-	}
-}
-*/
-
-/*
-func TestSimilarPatterns(t *testing.T) {
-	expected := []int{6, 7, 26, 27}
-	text := []byte("CGCCCGAATCCAGAACGCATTCCCATATTTCGGGACCACTGGCCTCCACGGTACGGACGTCAATCAAAT")
-	pattern := "ATTCTGGA"
-	tolerance := 3
-	actual := SimilarPatterns(text, pattern, tolerance)
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Error("Expected: ", expected, "Actual: ", actual)
-	}
-
-	expected = []int{4, 5, 6, 7, 8, 11, 12, 13, 14, 15}
-	text = []byte("TTTTTTAAATTTTAAATTTTTT")
-	pattern = "AAA"
-	tolerance = 2
-	actual = SimilarPatterns(text, pattern, tolerance)
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Error("Expected: ", expected, "Actual: ", actual)
-	}
-
-	expected = []int{0, 30, 66}
-	text = []byte("GAGCGCTGGGTTAACTCGCTACTTCCCGACGAGCGCTGTGGCGCAAATTGGCGATGAAACTGCAGAGAGAACTGGTCATCCAACTGAATTCTCCCCGCTATCGCATTTTGATGCGCGCCGCGTCGATT")
-	pattern = "GAGCGCTGG"
-	tolerance = 2
-	actual = SimilarPatterns(text, pattern, tolerance)
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Error("Expected: ", expected, "Actual: ", actual)
-	}
-}
-*/
 
 /*
 func TestFindAllKmers(t *testing.T) {

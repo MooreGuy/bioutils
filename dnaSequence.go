@@ -71,8 +71,8 @@ func (sequence dnaSequence) HammingDistance(compareSequence dnaSequence) int {
 // Finds patterns similar within a tolerance and returns their starting indexes
 func SimilarPatterns(genome dnaSequence, pattern dnaSequence, tolerance int) []int {
 	patternIndexes := []int{}
-	for i := 0; i < len(genome); i++ {
-		endIndex := min(i+len(pattern), len(genome)-1)
+	for i := 0; i <= len(genome)-len(pattern); i++ {
+		endIndex := min(i+len(pattern), len(genome))
 		comparePattern := genome[i:endIndex]
 		if len(comparePattern) < len(pattern) && i < len(pattern) {
 			comparePattern = LeftPad(comparePattern, len(pattern)-len(comparePattern))
@@ -95,13 +95,6 @@ func LeftPad(toPad dnaSequence, padLength int) dnaSequence {
 	return append(padding, toPad...)
 }
 
-func min(x, y int) int {
-	if x <= y {
-		return x
-	}
-	return y
-}
-
 func (genome dnaSequence) PatternCount(pattern dnaSequence) int {
 	var count int = 0
 	var index int = 0
@@ -113,6 +106,10 @@ func (genome dnaSequence) PatternCount(pattern dnaSequence) int {
 	}
 
 	return count
+}
+
+func (genome dnaSequence) PatternCountWithMismatches(pattern dnaSequence, tolerance int) int {
+	return len(SimilarPatterns(genome, pattern, tolerance))
 }
 
 func (sequence dnaSequence) String() string {
@@ -195,27 +192,25 @@ func MostFrequentKmersWithMismatch(genome dnaSequence, k int, tolerance int) []d
 }
 */
 
-func Test(genome dnaSequence, k int, tolerance int) []dnaSequence {
+func FrequentKmersWithMismatches(genome dnaSequence, k int, tolerance int) []dnaSequence {
 	mers := FindAllKmers(genome, k)
 	var mostFrequent []dnaSequence
 	highestFrequency := 0
 	for _, mer := range mers {
 		neighbors := GenerateNeighbors(mer, tolerance)
-		sum := 0
 		for _, neighbor := range neighbors {
-			sum += genome.PatternCount(neighbor)
-		}
-
-		if highestFrequency < sum {
-			mostFrequent = []dnaSequence{mer}
-			mostFrequent = append(mostFrequent, neighbors...)
-			highestFrequency = sum
-		} else if highestFrequency == sum {
-			mostFrequent = append(mostFrequent, neighbors...)
+			currentFrequency := genome.PatternCountWithMismatches(neighbor, tolerance)
+			if highestFrequency < currentFrequency {
+				mostFrequent = []dnaSequence{neighbor}
+				mostFrequent = append(mostFrequent, neighbor)
+				highestFrequency = currentFrequency
+			} else if highestFrequency == currentFrequency {
+				mostFrequent = append(mostFrequent, neighbor)
+			}
 		}
 	}
 
-	return mostFrequent
+	return RemoveDuplicates(mostFrequent)
 }
 
 func Test2(genome dnaSequence, k int, tolerance int) []dnaSequence {
@@ -249,17 +244,20 @@ func FindAllKmers(genome dnaSequence, k int) []dnaSequence {
 
 func RemoveDuplicates(mers []dnaSequence) []dnaSequence {
 	for i := 0; i <= len(mers)-1; i++ {
-		for comparingIndex := i + 1; comparingIndex <= len(mers)-1; comparingIndex++ {
+		for compareIndex := i + 1; compareIndex <= len(mers)-1; compareIndex++ {
 			currentMer := mers[i]
-			compareMer := mers[comparingIndex]
+			compareMer := mers[compareIndex]
 			if reflect.DeepEqual(currentMer, compareMer) {
-				// delete i
-				mers = append(mers[:comparingIndex],
-					mers[comparingIndex+1:]...)
-				comparingIndex--
+				// delete compareIndex
+				if compareIndex == len(mers)-1 {
+					mers = mers[:compareIndex]
+				} else {
+					mers = append(mers[:compareIndex], mers[compareIndex+1:]...)
+				}
+				compareIndex--
 			}
 		}
 	}
 
-	return RemoveDuplicates(mers)
+	return mers
 }
