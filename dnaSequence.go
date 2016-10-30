@@ -213,25 +213,37 @@ func FrequentKmersWithMismatches(genome dnaSequence, k int, tolerance int) []dna
 	return RemoveDuplicates(mostFrequent)
 }
 
-func Test2(genome dnaSequence, k int, tolerance int) []dnaSequence {
+func FrequentKmersWithMismatchesAndReverseComplements(genome dnaSequence, k int, tolerance int) []dnaSequence {
 	mers := FindAllKmers(genome, k)
 	var mostFrequent []dnaSequence
 	highestFrequency := 0
 	for _, mer := range mers {
-		frequencyWithMismatch := len(SimilarPatterns(genome, mer, tolerance))
-
-		if highestFrequency < frequencyWithMismatch {
-			mostFrequent = []dnaSequence{mer}
-			neighbors := GenerateNeighbors(mer, tolerance)
-			mostFrequent = append(mostFrequent, neighbors...)
-			highestFrequency = frequencyWithMismatch
-		} else if highestFrequency == frequencyWithMismatch {
-			neighbors := GenerateNeighbors(mer, tolerance)
-			mostFrequent = append(mostFrequent, neighbors...)
+		neighbors := GenerateNeighbors(mer, tolerance)
+		for _, neighbor := range neighbors {
+			reverseComplement := neighbor.GenerateReverseComplement()
+			currentFrequency := genome.PatternCountWithMismatches(neighbor, tolerance)
+			currentFrequency += genome.PatternCountWithMismatches(reverseComplement, tolerance)
+			if highestFrequency < currentFrequency {
+				mostFrequent = []dnaSequence{neighbor}
+				mostFrequent = append(mostFrequent, neighbor)
+				mostFrequent = append(mostFrequent, reverseComplement)
+				highestFrequency = currentFrequency
+			} else if highestFrequency == currentFrequency {
+				mostFrequent = append(mostFrequent, neighbor)
+				mostFrequent = append(mostFrequent, reverseComplement)
+			}
 		}
 	}
 
 	return RemoveDuplicates(mostFrequent)
+}
+
+func (sequence dnaSequence) GenerateReverseComplement() dnaSequence {
+	reverse := dnaSequence{}
+	for i := len(sequence) - 1; i >= 0; i-- {
+		reverse = append(reverse, sequence[i].Complement())
+	}
+	return reverse
 }
 
 func FindAllKmers(genome dnaSequence, k int) []dnaSequence {

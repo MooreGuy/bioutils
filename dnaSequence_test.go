@@ -52,6 +52,52 @@ func TestHammingDistance(t *testing.T) {
 	}
 }
 
+func TestGenerateReverseComplements(t *testing.T) {
+	sequence, _ := CreateDNASequence("AT")
+	expected, _ := CreateDNASequence("AT")
+	actual := sequence.GenerateReverseComplement()
+	if !reflect.DeepEqual(actual, expected) {
+		t.Error("Expected: ", expected, " Actual: ", actual)
+	}
+
+	sequence, _ = CreateDNASequence("GGG")
+	expected, _ = CreateDNASequence("CCC")
+	actual = sequence.GenerateReverseComplement()
+	if !reflect.DeepEqual(actual, expected) {
+		t.Error("Expected: ", expected, " Actual: ", actual)
+	}
+
+	sequence, _ = CreateDNASequence("TGTC")
+	expected, _ = CreateDNASequence("GACA")
+	actual = sequence.GenerateReverseComplement()
+	if !reflect.DeepEqual(actual, expected) {
+		t.Error("Expected: ", expected, " Actual: ", actual)
+	}
+
+	sequence, _ = CreateDNASequence("TAT")
+	expected, _ = CreateDNASequence("ATA")
+	actual = sequence.GenerateReverseComplement()
+	if !reflect.DeepEqual(actual, expected) {
+		t.Error("Expected: ", expected, " Actual: ", actual)
+	}
+}
+
+func TestFrequentKmersWithMismatchesAndReverseComplements(t *testing.T) {
+	sequence, _ := CreateDNASequence("ACGTTGCATGTCGCATGATGCATGAGAGCT")
+	expected, _ := DNASequences([]string{"ACAT", "ATGT"})
+	actual := FrequentKmersWithMismatchesAndReverseComplements(sequence, 4, 1)
+	if !sequencesEqual(expected, actual) {
+		t.Error("Expected: ", expected, " Actual: ", actual)
+	}
+
+	sequence, _ = CreateDNASequence("AAT")
+	expected, _ = DNASequences([]string{"AAT", "ATT"})
+	actual = FrequentKmersWithMismatchesAndReverseComplements(sequence, 3, 0)
+	if !sequencesEqual(expected, actual) {
+		t.Error("Expected: ", expected, " Actual: ", actual)
+	}
+}
+
 func TestFrequentKmersWithMismatches(t *testing.T) {
 	sequence, _ := CreateDNASequence("ACGTTGCATGTCGCATGATGCATGAGAGCT")
 	expected, _ := DNASequences([]string{"GATG", "ATGC", "ATGT"})
@@ -68,7 +114,9 @@ func TestFrequentKmersWithMismatches(t *testing.T) {
 	}
 
 	sequence, _ = CreateDNASequence("AGTCAGTC")
-	expected, _ = DNASequences([]string{"TCTC", "CGGC", "AAGC", "TGTG", "GGCC", "AGGT", "ATCC", "ACTG", "ACAC", "AGAG", "ATTA", "TGAC", "AATT", "CGTT", "GTTC", "GGTA", "AGCA", "CATC"})
+	expected, _ = DNASequences([]string{"TCTC", "CGGC", "AAGC", "TGTG", "GGCC",
+		"AGGT", "ATCC", "ACTG", "ACAC", "AGAG", "ATTA", "TGAC", "AATT", "CGTT",
+		"GTTC", "GGTA", "AGCA", "CATC"})
 	actual = FrequentKmersWithMismatches(sequence, 4, 2)
 	if !sequencesEqual(expected, actual) {
 		t.Error("Expected: ", expected, " Actual: ", actual)
@@ -215,7 +263,6 @@ func TestPatternCount(t *testing.T) {
 	}
 }
 
-/*
 func TestPatternCountWithMismatches(t *testing.T) {
 	genome, _ := CreateDNASequence("GCGCA")
 	pattern, _ := CreateDNASequence("GCG")
@@ -225,7 +272,6 @@ func TestPatternCountWithMismatches(t *testing.T) {
 		t.Error("Expected 2, got ", count)
 	}
 }
-*/
 
 // Checks to see if two sequences have the exact same dnaSequences but any order
 func sequencesEqual(a []dnaSequence, b []dnaSequence) bool {

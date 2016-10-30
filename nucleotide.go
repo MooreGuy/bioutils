@@ -44,3 +44,19 @@ func (n nucleotide) OtherNucleotides() (otherNucleotides []nucleotide) {
 	}
 	return
 }
+
+func (n nucleotide) Complement() nucleotide {
+	var complement nucleotide
+	switch n {
+	case 'A':
+		complement = 'T'
+	case 'C':
+		complement = 'G'
+	case 'G':
+		complement = 'C'
+	case 'T':
+		complement = 'A'
+	}
+
+	return complement
+}
