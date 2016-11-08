@@ -273,3 +273,41 @@ func RemoveDuplicates(mers []dnaSequence) []dnaSequence {
 
 	return mers
 }
+
+// Motifs are patterns that are present accross multiple dna sequences.
+//
+// FindMotifs returns the maximized result of all motifs that are k length
+// and d mismatches from eachother.
+func FindMotifs(sequences []dnaSequence, k int, d int) {
+	motifs := []dnaSequence{}
+	allKmers := FindAllKmers(sequences, k)
+	for _, currentKmer := range allKmers {
+		for _, generated := range GenerateNeighbors(currentKmer, d) {
+			if AllContain(sequences, generated, d) {
+				motifs = append(motifs, generated)
+			}
+		}
+	}
+
+	motifs = RemoveDuplicates(motifs)
+}
+
+func AllContain(haystacks []dnaSequence, needle dnaSequence, d int) bool {
+	for _, sequence := range sequences {
+		if !sequence.SearchWithMismatches(needle, d) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (haystack dnaSequence) Contains(needle dnaSequence, d int) bool {
+	for i := 0; i <= len(haystack)-len(needle); i++ {
+		if haystack[i:len(needle)].HammingDistance(needle) <= d {
+			return true
+		}
+	}
+
+	return false
+}
