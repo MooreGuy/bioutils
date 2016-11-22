@@ -273,6 +273,24 @@ func TestPatternCountWithMismatches(t *testing.T) {
 	}
 }
 
+func TestFindMotifs(t *testing.T) {
+
+}
+
+func TestAllContain(t *testing.T) {
+	gneome, _ := CreateDNASequence
+}
+
+func TestContains(t *testing.T) {
+	sequence, _ := CreateDNASequence("ATTTGGC")
+	toFind, _ := CreateDNASequence("ATTT")
+	expected := true
+	actual := sequence.Contains(expected, 0)
+	if expected != actual {
+		t.Error("Expected contains did not match actual.")
+	}
+}
+
 // Checks to see if two sequences have the exact same dnaSequences but any order
 func sequencesEqual(a []dnaSequence, b []dnaSequence) bool {
 	if len(a) != len(b) {

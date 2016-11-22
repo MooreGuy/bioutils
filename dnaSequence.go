@@ -280,7 +280,11 @@ func RemoveDuplicates(mers []dnaSequence) []dnaSequence {
 // and d mismatches from eachother.
 func FindMotifs(sequences []dnaSequence, k int, d int) {
 	motifs := []dnaSequence{}
-	allKmers := FindAllKmers(sequences, k)
+	allKmers := []dnaSequence{}
+	for _, mer := range sequences {
+		allKmers = append(allKmers, FindAllKmers(mer, k)...)
+	}
+
 	for _, currentKmer := range allKmers {
 		for _, generated := range GenerateNeighbors(currentKmer, d) {
 			if AllContain(sequences, generated, d) {
@@ -293,8 +297,8 @@ func FindMotifs(sequences []dnaSequence, k int, d int) {
 }
 
 func AllContain(haystacks []dnaSequence, needle dnaSequence, d int) bool {
-	for _, sequence := range sequences {
-		if !sequence.SearchWithMismatches(needle, d) {
+	for _, sequence := range haystacks {
+		if !sequence.Contains(needle, d) {
 			return false
 		}
 	}
