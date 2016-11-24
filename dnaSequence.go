@@ -278,7 +278,7 @@ func RemoveDuplicates(mers []dnaSequence) []dnaSequence {
 //
 // FindMotifs returns the maximized result of all motifs that are k length
 // and d mismatches from eachother.
-func FindMotifs(sequences []dnaSequence, k int, d int) {
+func FindMotifs(sequences []dnaSequence, k int, d int) []dnaSequence {
 	motifs := []dnaSequence{}
 	allKmers := []dnaSequence{}
 	for _, mer := range sequences {
@@ -293,7 +293,7 @@ func FindMotifs(sequences []dnaSequence, k int, d int) {
 		}
 	}
 
-	motifs = RemoveDuplicates(motifs)
+	return RemoveDuplicates(motifs)
 }
 
 func AllContain(haystacks []dnaSequence, needle dnaSequence, d int) bool {

@@ -274,11 +274,56 @@ func TestPatternCountWithMismatches(t *testing.T) {
 }
 
 func TestFindMotifs(t *testing.T) {
-
+	sequence1, _ := CreateDNASequence("ATTTGGC")
+	sequence2, _ := CreateDNASequence("TGCCTTA")
+	sequence3, _ := CreateDNASequence("CGGTATC")
+	sequence4, _ := CreateDNASequence("GAAAATT")
+	sequences := []dnaSequence{sequence1, sequence2, sequence3, sequence4}
+	expected, _ := DNASequences([]string{"ATA", "ATT", "GTT", "TTT"})
+	actual := FindMotifs(sequences, 3, 1)
+	if !sequencesEqual(expected, actual) {
+		t.Error("Expected motifs didn't match actual.")
+	}
 }
 
 func TestAllContain(t *testing.T) {
-	//gneome, _ := CreateDNASequence()
+	sequence1, _ := CreateDNASequence("GATG")
+	sequence2, _ := CreateDNASequence("GATG")
+	sequences := []dnaSequence{sequence1, sequence2}
+	toFind, _ := CreateDNASequence("AT")
+	expected := true
+	actual := AllContain(sequences, toFind, 0)
+	if expected != actual {
+		t.Error("Expected to find in all sequences, but didn't")
+	}
+
+	toFind, _ = CreateDNASequence("GT")
+	expected = true
+	actual = AllContain(sequences, toFind, 1)
+	if expected != actual {
+		t.Error("Expected to find in all sequences, but didn't")
+	}
+
+	toFind, _ = CreateDNASequence("CAT")
+	expected = true
+	actual = AllContain(sequences, toFind, 1)
+	if expected != actual {
+		t.Error("Expected to find in all sequences, but didn't")
+	}
+
+	toFind, _ = CreateDNASequence("CAT")
+	expected = false
+	actual = AllContain(sequences, toFind, 0)
+	if expected != actual {
+		t.Error("Expected to find in all sequences, but didn't")
+	}
+
+	toFind, _ = CreateDNASequence("CAG")
+	expected = false
+	actual = AllContain(sequences, toFind, 1)
+	if expected != actual {
+		t.Error("Expected to find in all sequences, but didn't")
+	}
 }
 
 func TestContains(t *testing.T) {
@@ -313,7 +358,8 @@ func TestContains(t *testing.T) {
 
 }
 
-// Checks to see if two sequences have the exact same dnaSequences but any order
+// Checks to see if two sequence slices have the exact same dnaSequences but
+// any order
 func sequencesEqual(a []dnaSequence, b []dnaSequence) bool {
 	if len(a) != len(b) {
 		return false
