@@ -278,17 +278,39 @@ func TestFindMotifs(t *testing.T) {
 }
 
 func TestAllContain(t *testing.T) {
-	gneome, _ := CreateDNASequence
+	//gneome, _ := CreateDNASequence()
 }
 
 func TestContains(t *testing.T) {
 	sequence, _ := CreateDNASequence("ATTTGGC")
 	toFind, _ := CreateDNASequence("ATTT")
 	expected := true
-	actual := sequence.Contains(expected, 0)
+	actual := sequence.Contains(toFind, 0)
 	if expected != actual {
-		t.Error("Expected contains did not match actual.")
+		t.Error("Expected to find sequence, but didn't")
 	}
+
+	toFind, _ = CreateDNASequence("AGTT")
+	expected = true
+	actual = sequence.Contains(toFind, 1)
+	if expected != actual {
+		t.Error("Expected to find sequence, but didn't")
+	}
+
+	toFind, _ = CreateDNASequence("AGG")
+	expected = false
+	actual = sequence.Contains(toFind, 0)
+	if expected != actual {
+		t.Error("Didn't expect to find sequence, but did.")
+	}
+
+	toFind, _ = CreateDNASequence("AGGT")
+	expected = false
+	actual = sequence.Contains(toFind, 1)
+	if expected != actual {
+		t.Error("Didn't expect to find sequence, but did.")
+	}
+
 }
 
 // Checks to see if two sequences have the exact same dnaSequences but any order

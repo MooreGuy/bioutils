@@ -308,7 +308,8 @@ func AllContain(haystacks []dnaSequence, needle dnaSequence, d int) bool {
 
 func (haystack dnaSequence) Contains(needle dnaSequence, d int) bool {
 	for i := 0; i <= len(haystack)-len(needle); i++ {
-		if haystack[i:len(needle)].HammingDistance(needle) <= d {
+		curSequence := haystack[i:min(i+len(needle), len(haystack))]
+		if curSequence.HammingDistance(needle) <= d {
 			return true
 		}
 	}
