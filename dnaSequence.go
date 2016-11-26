@@ -3,10 +3,12 @@ package bioutils
 import (
 	"errors"
 	"reflect"
+	"strings"
 )
 
 // Represents a sequence of nucleotides
 type dnaSequence []nucleotide
+type sequenceGroup []dnaSequence
 
 // Takes in a string representation of the nucleotide bases and returns a
 // completely checked dna sequence
@@ -254,18 +256,13 @@ func FindAllKmers(genome dnaSequence, k int) []dnaSequence {
 	return RemoveDuplicates(kmers)
 }
 
-func RemoveDuplicates(mers []dnaSequence) []dnaSequence {
-	for i := 0; i <= len(mers)-1; i++ {
-		for compareIndex := i + 1; compareIndex <= len(mers)-1; compareIndex++ {
-			currentMer := mers[i]
+func RemoveDuplicates(mers sequenceGroup) []dnaSequence {
+	for i := 0; i < len(mers)-1; i++ {
+		currentMer := mers[i]
+		for compareIndex := i + 1; compareIndex < len(mers); compareIndex++ {
 			compareMer := mers[compareIndex]
-			if reflect.DeepEqual(currentMer, compareMer) {
-				// delete compareIndex
-				if compareIndex == len(mers)-1 {
-					mers = mers[:compareIndex]
-				} else {
-					mers = append(mers[:compareIndex], mers[compareIndex+1:]...)
-				}
+			if currentMer.Equals(compareMer) {
+				mers = mers.Remove(compareIndex)
 				compareIndex--
 			}
 		}
@@ -315,4 +312,92 @@ func (haystack dnaSequence) Contains(needle dnaSequence, d int) bool {
 	}
 
 	return false
+}
+
+// Compares two sequences, and returns whether they are the same.
+func (sequenceA dnaSequence) Equals(sequenceB dnaSequence) bool {
+	if len(sequenceA) != len(sequenceB) {
+		return false
+	}
+	for i := 0; i < len(sequenceA); i++ {
+		if sequenceA[i] != sequenceB[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
+/*
+TODO: Implement quick sorting.
+func (group sequenceGroup) Sort() {
+	for
+	group.
+}
+
+func (group sequenceGroup) partition() {
+}
+*/
+
+func (sequence dnaSequence) Compare(compareSequence dnaSequence) int {
+	return strings.Compare(string(sequence), string(compareSequence))
+}
+
+func (group sequenceGroup) Sort() sequenceGroup {
+	for i := 0; i < len(group)-1; i++ {
+		lowest := i
+		for k := i + 1; k < len(group); k++ {
+			if group[lowest].Compare(group[k]) == 1 {
+				lowest = k
+			}
+		}
+
+		if lowest != i {
+			tmp := group[i]
+			group[i] = group[lowest]
+			group[lowest] = tmp
+		}
+	}
+
+	return group
+}
+
+func (group sequenceGroup) FindSequence(needle dnaSequence) int {
+	for index, curSequence := range group {
+		if curSequence.Equals(needle) {
+			return index
+		}
+	}
+
+	return -1
+}
+
+func (groupA sequenceGroup) Diff(groupB sequenceGroup) (diffA sequenceGroup, diffB sequenceGroup) {
+	groupA = RemoveDuplicates(groupA)
+	groupB = RemoveDuplicates(groupB)
+
+	for i := 0; i < len(groupA); i++ {
+		if searchIndex := groupB.FindSequence(groupA[i]); searchIndex != -1 {
+			groupA = groupA.Remove(i)
+			groupB = groupB.Remove(searchIndex)
+			i--
+		}
+	}
+
+	for i := 0; i < len(groupB); i++ {
+		if searchIndex := groupA.FindSequence(groupB[i]); searchIndex != -1 {
+			groupA = groupA.Remove(searchIndex)
+			groupB = groupB.Remove(i)
+			i--
+		}
+	}
+
+	return groupA, groupB
+}
+
+// Removes index i from the group.
+func (group sequenceGroup) Remove(i int) sequenceGroup {
+	group = append(group[:i], group[i+1:]...)
+
+	return group
 }

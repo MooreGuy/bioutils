@@ -1,6 +1,7 @@
 package bioutils
 
 import (
+	"log"
 	"reflect"
 	"testing"
 )
@@ -23,6 +24,32 @@ func TestCreateGenomeFromText(t *testing.T) {
 	}
 }
 */
+
+func testDiff(t *testing.T) {
+	sequencesA, _ := DNASequences([]string{"AGT", "AGA"})
+	sequencesB, _ := DNASequences([]string{"AGT", "AGC"})
+	expectedDiffA, _ := DNASequences([]string{"AGA"})
+	expectedDiffB, _ := DNASequences([]string{"AGC"})
+	actualDiffA, actualDiffB := sequenceGroup(sequencesA).Diff(sequencesB)
+	if !sequencesEqual(expectedDiffA, actualDiffA) {
+		t.Error("Diff A doesn't match expected.")
+	}
+	if !sequencesEqual(expectedDiffB, actualDiffB) {
+		t.Error("Diff B doesn't match expected.")
+	}
+
+	sequencesA, _ = DNASequences([]string{"AGT", "AGT"})
+	sequencesB, _ = DNASequences([]string{"AGT", "AGT", "AGC"})
+	expectedDiffA, _ = DNASequences([]string{})
+	expectedDiffB, _ = DNASequences([]string{"AGC"})
+	actualDiffA, actualDiffB = sequenceGroup(sequencesA).Diff(sequencesB)
+	if !sequencesEqual(expectedDiffA, actualDiffA) {
+		t.Error("Diff A doesn't match expected.")
+	}
+	if !sequencesEqual(expectedDiffB, actualDiffB) {
+		t.Error("Diff B doesn't match expected.")
+	}
+}
 
 func TestLeftPad(t *testing.T) {
 	padding := dnaSequence([]nucleotide{nucleotide(PadNucleotide()), nucleotide(PadNucleotide()), nucleotide(PadNucleotide())})
@@ -146,7 +173,7 @@ func TestRemoveDuplicates(t *testing.T) {
 		t.Error("Expected: ", expected, "Actual: ", actual)
 	}
 
-	sequences, err = DNASequences([]string{"A", "G", "G"})
+	sequences, err = DNASequences([]string{"A", "G", "G", "G", "G"})
 	if err != nil {
 		t.Error("didn't expect an error when creating a sequences")
 	}
@@ -273,6 +300,32 @@ func TestPatternCountWithMismatches(t *testing.T) {
 	}
 }
 
+func TestRemove(t *testing.T) {
+	group, _ := DNASequences([]string{"A", "G", "T"})
+	removeIndex := 2
+	expected, _ := DNASequences([]string{"A", "G"})
+	actual := sequenceGroup(group).Remove(removeIndex)
+	if !sequencesEqual(expected, actual) {
+		t.Error("Remove didn't remove correctly.")
+	}
+
+	group, _ = DNASequences([]string{"A", "G", "T", "C"})
+	removeIndex = 0
+	expected, _ = DNASequences([]string{"G", "T", "C"})
+	actual = sequenceGroup(group).Remove(removeIndex)
+	if !sequencesEqual(expected, actual) {
+		t.Error("Remove didn't remove correctly.")
+	}
+
+	group, _ = DNASequences([]string{"A", "G", "T", "C", "C", "C"})
+	removeIndex = 3
+	expected, _ = DNASequences([]string{"A", "G", "T", "C", "C"})
+	actual = sequenceGroup(group).Remove(removeIndex)
+	if !sequencesEqual(expected, actual) {
+		t.Error("Remove didn't remove correctly.")
+	}
+}
+
 func TestFindMotifs(t *testing.T) {
 	sequence1, _ := CreateDNASequence("ATTTGGC")
 	sequence2, _ := CreateDNASequence("TGCCTTA")
@@ -284,6 +337,40 @@ func TestFindMotifs(t *testing.T) {
 	if !sequencesEqual(expected, actual) {
 		t.Error("Expected motifs didn't match actual.")
 	}
+
+	sequences, _ = DNASequences([]string{"ACGT", "ACGT", "ACGT"})
+	expected, _ = DNASequences([]string{"ACG", "CGT"})
+	actual = FindMotifs(sequences, 3, 0)
+	if !sequencesEqual(expected, actual) {
+		t.Error("Expected motifs didn't match actual.")
+	}
+
+	sequences, _ = DNASequences([]string{"AAAAA", "AAAAA", "AAAAA"})
+	expected, _ = DNASequences([]string{"AAA", "AAC", "AAG", "AAT", "ACA", "AGA", "ATA", "CAA", "GAA", "TAA"})
+	actual = FindMotifs(sequences, 3, 1)
+	if !sequencesEqual(expected, actual) {
+		t.Error("Expected motifs didn't match actual.")
+	}
+
+	sequences, _ = DNASequences([]string{"AAAAA", "AAAAA", "AACAA"})
+	expected, _ = DNASequences([]string{})
+	actual = FindMotifs(sequences, 3, 0)
+	if !sequencesEqual(expected, actual) {
+		t.Error("Expected motifs didn't match actual.")
+	}
+
+	sequences, _ = DNASequences([]string{"AAAAA", "AAAAA", "AAAAA"})
+	expected, _ = DNASequences([]string{"AAA", "AAC", "AAG", "AAT", "ACA", "ACC", "ACG", "ACT", "AGA", "AGC", "AGG", "AGT", "ATA", "ATA", "ATC", "ATG", "ATT", "CAA", "CAC", "CAG", "CAT", "CCA", "CCC", "CCG", "CCT", "CGA", "CGC", "CGG", "CGT", "CTA", "CTC", "CTG", "CTT", "GAA", "GAC", "GAG", "GAT", "GCA", "GCC", "GCG", "GCT", "GGA", "GGC", "GGG", "GGT", "GTA", "GTC", "GTG", "GTT", "TAA", "TAC", "TAG", "TAT", "TCA", "TCC", "TCG", "TCT", "TGA", "TGC", "TGG", "TGT", "TTA", "TTC", "TTG", "TTT"})
+	actual = FindMotifs(sequences, 3, 3)
+	if !sequencesEqual(expected, actual) {
+		log.Println("actual", sequenceGroup(actual).Sort())
+		log.Println("expected", sequenceGroup(expected).Sort())
+		diffA, diffB := sequenceGroup(actual).Diff(actual)
+		log.Println("diffA", diffA)
+		log.Println("diffB", diffB)
+		t.Error("Expected motifs didn't match actual.")
+	}
+
 }
 
 func TestAllContain(t *testing.T) {
@@ -354,6 +441,56 @@ func TestContains(t *testing.T) {
 	actual = sequence.Contains(toFind, 1)
 	if expected != actual {
 		t.Error("Didn't expect to find sequence, but did.")
+	}
+
+}
+
+func testFindSequence(t *testing.T) {
+	group, _ := DNASequences([]string{"AGT", "ACT", "GAC"})
+	toFind, _ := CreateDNASequence("AGT")
+	expected := 1
+	actual := sequenceGroup(group).FindSequence(toFind)
+	if expected != actual {
+		t.Error("Expected index didn't match actual")
+	}
+
+	toFind, _ = CreateDNASequence("GCC")
+	expected = -1
+	actual = sequenceGroup(group).FindSequence(toFind)
+	if expected != actual {
+		t.Error("Expected index didn't match actual")
+	}
+
+	toFind, _ = CreateDNASequence("GAC")
+	expected = 2
+	actual = sequenceGroup(group).FindSequence(toFind)
+	if expected != actual {
+		t.Error("Expected index didn't match actual")
+	}
+
+}
+
+func testEquals(t *testing.T) {
+	sequenceA, _ := CreateDNASequence("AG")
+	sequenceB, _ := CreateDNASequence("AG")
+	expected := true
+	actual := sequenceA.Equals(sequenceB)
+	if expected != actual {
+		t.Error("sequence A doesn't equal sequence B")
+	}
+
+	sequenceB, _ = CreateDNASequence("AC")
+	expected = false
+	actual = sequenceA.Equals(sequenceB)
+	if expected != actual {
+		t.Error("sequence A doesn't equal sequence B")
+	}
+
+	sequenceB, _ = CreateDNASequence("AGC")
+	expected = false
+	actual = sequenceA.Equals(sequenceB)
+	if expected != actual {
+		t.Error("sequence A doesn't equal sequence B")
 	}
 
 }
