@@ -339,8 +339,12 @@ func (group sequenceGroup) partition() {
 }
 */
 
+func (sequence dnaSequence) String() string {
+	return sequence
+}
+
 func (sequence dnaSequence) Compare(compareSequence dnaSequence) int {
-	return strings.Compare(string(sequence), string(compareSequence))
+	return strings.Compare(string([]nucleotide(sequence)), string([]nucleotide(compareSequence)))
 }
 
 func (group sequenceGroup) Sort() sequenceGroup {
