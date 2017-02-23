@@ -2,7 +2,8 @@ import dnaSequence
 import sys
 
 def readSingleNucleotide():
-    return open("dataset", "r").readline()
+    string = open("dataset", "r").readline()
+    return string.replace("\n", "")
 
 # Reads a single line from dataset and returns the resulting count
 def count_nucleotides():
