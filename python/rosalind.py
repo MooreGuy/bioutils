@@ -13,9 +13,14 @@ def transcribe_dna_to_rna():
    transcription = dnaSequence.transcribe(readSingleNucleotide())
    print(transcription)
 
+def reverse_complement():
+    dnaString = readSingleNucleotide()
+    print(dnaSequence.complement(dnaString))
+
 problems = {
     "count-nucleotides": count_nucleotides,
     "transcribe-dna-to-rna": transcribe_dna_to_rna,
+    "reverse-complement": reverse_complement
 }
 print(count_nucleotides())
 

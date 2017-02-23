@@ -70,3 +70,41 @@ def contains(sequence, pattern, d):
 def output(sequences):
     for sequence in sequences:
         print(sequence + " ")
+
+# dnaString is a string of nucleotides that will have each individual
+# nucldeotide counted
+def count(dnaString):
+    nucleotides = {}
+    for i in dnaString:
+        if i in nucleotides:
+            nucleotides[i] += 1
+        else:
+            nucleotides[i] = 1
+
+    return nucleotides
+
+# Tates a DNA string and transcribes it to RNA
+def transcribe(dnaString):
+    transcription = ""
+    for i in dnaString:
+        if i == "T":
+            transcription += "U"
+        else:
+            transcription += i
+
+    print(transcription)
+    return transcription
+
+# Given a DNA string gives the reverse complement
+# ex: ACG -> CGT
+def complement(dnaString):
+    complements = {
+        'A': 'T',
+        'T': 'A',
+        'C': 'G',
+        'G': 'C',
+    }
+
+    revComplement = map(lambda nuc: {complements[nuc]}, dnaString[::-1])
+    # map() returns a list of sets? Maybe my doing, but this will fix it
+    return ''.join(i.pop() for i in revComplement)
