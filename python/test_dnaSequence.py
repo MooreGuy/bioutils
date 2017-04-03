@@ -73,3 +73,11 @@ class TestDnaSequence(unittest.TestCase):
         expected = set(["AAA", "AAC", "AAG", "AAT", "ACA", "AGA", "ATA", "CAA", "GAA", "TAA"])
         actual = dnaSequence.findMotifs(sequences, 3, 1)
         self.assertEqual(expected, actual)
+
+    def test_subs(self):
+        string = ["GATATATGCATATACTT"]
+        sub = ["ATAT"]
+
+        expected = [2,4,10]
+        actual = dnaSequence.subs(string, sub)
+        self.assertEqual(expected, actual)

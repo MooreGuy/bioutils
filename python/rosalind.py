@@ -29,11 +29,16 @@ def distance():
     dnaStrings = readMulti()
     print(dnaSequence.distance(dnaStrings[0], dnaStrings[1]))
 
+def subs():
+    dnaStrings = readMulti()
+    print(dnaSequence.subs(dnaStrings[0], dnaStrings[1]))
+
 problems = {
     "count-nucleotides":     count_nucleotides,
     "transcribe-dna-to-rna": transcribe_dna_to_rna,
     "reverse-complement":    reverse_complement,
     "distance":              distance,
+    "subs":                  subs,
 }
 print(count_nucleotides())
 

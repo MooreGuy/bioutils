@@ -108,3 +108,12 @@ def complement(dnaString):
     revComplement = map(lambda nuc: {complements[nuc]}, dnaString[::-1])
     # map() returns a list of sets? Maybe my doing, but this will fix it
     return ''.join(i.pop() for i in revComplement)
+
+# Given a string and a potential substring, returns all
+def subs(string, subs):
+    subsLocations = []
+    for i in range(len(string)):
+        if subs == string[i:i + len(subs)]:
+            subsLocations.append(i+1)
+
+    return subsLocations
