@@ -1,0 +1,5 @@
+language: python
+
+install: true
+
+script: python -m unittest python/test_dnaSequence.py 
